@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Speedometer GPS Akurat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-white h-[100dvh] flex flex-col font-sans select-none overflow-hidden w-full transition-colors duration-300">
+    
+    <header class="p-4 flex justify-between items-center relative z-20" style="padding-top: max(1rem, env(safe-area-inset-top));">
+        <span class="text-sm sm:text-base tracking-widest uppercase text-gray-500 dark:text-gray-400 font-semibold">Speedometer</span>
+        
+        <div class="flex items-center gap-3">
+            <button id="history-btn" class="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 focus:outline-none transition-colors hover:bg-blue-200 dark:hover:bg-blue-800/50 cursor-pointer">
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            </button>
+
+            <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 focus:outline-none transition-colors hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer">
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 011.415 0l.708.708a1 1 0 01-1.414 1.414l-.708-.708a1 1 0 010-1.414zM16 10a1 1 0 011 1h1a1 1 0 110-2h-1a1 1 0 01-1 1zm-4.22 4.22a1 1 0 010 1.415l-.708.708a1 1 0 01-1.414-1.414l.708-.708a1 1 0 011.415 0zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-4.22a1 1 0 01-1.415 0l-.708-.708a1 1 0 011.414-1.414l.708.708a1 1 0 010 1.414zM4 10a1 1 0 01-1 1H2a1 1 0 110-2h1a1 1 0 011 1zm4.22-4.22a1 1 0 010-1.415l.708-.708a1 1 0 011.414 1.414l-.708.708a1 1 0 01-1.415 0zM10 5a5 5 0 100 10 5 5 0 000-10z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+
+            <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">GPS <span id="gps-status" class="text-red-500 font-bold tracking-widest text-lg">|||</span></span>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col items-center justify-center relative mt-[-1rem] z-10">
+        <div class="text-[6rem] sm:text-[8rem] font-bold tracking-tighter leading-none" id="speed">0</div>
+        <div class="text-xl text-gray-500 dark:text-gray-400 mt-2 font-medium">km/h</div>
+    </main>
+
+    <section class="grid grid-cols-2 gap-y-4 gap-x-2 p-5 pb-8 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] overflow-y-auto transition-colors duration-300 relative z-20">
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Masa</span>
+            </div>
+            <span class="text-lg font-semibold" id="time">00:00:00</span>
+        </div>
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Maksimum</span>
+            </div>
+            <span class="text-lg font-semibold"><span id="max-speed">0</span> km/h</span>
+        </div>
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Jarak</span>
+            </div>
+            <span class="text-lg font-semibold"><span id="distance">0.00</span> km</span>
+        </div>
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Rata-rata</span>
+            </div>
+            <span class="text-lg font-semibold"><span id="avg-speed">0</span> km/h</span>
+        </div>
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Est. Minyak</span>
+            </div>
+            <span class="text-lg font-semibold"><span id="fuel-used">0.00</span> L</span>
+        </div>
+        <div class="flex flex-col items-start pl-2">
+            <div class="flex items-center gap-1 mb-1 text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                <span class="text-[10px] uppercase tracking-wider">Rasio BBM</span>
+            </div>
+            <span class="text-lg font-semibold"><span id="fuel-ratio">38.0</span> km/l</span>
+        </div>
+    </section>
+
+    <div id="history-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-gray-100 dark:bg-gray-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-gray-200 dark:border-gray-800">
+            <button id="close-history" class="absolute top-5 right-5 p-2 rounded-full text-gray-500 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none cursor-pointer">
+                <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white mt-2">Jurnal Berkendara</h2>
+            <div id="history-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIKA THEME TOGGLE (DARK/LIGHT MODE) ---
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        function updateIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
+            } else {
+                themeToggleLightIcon.classList.add('hidden');
+                themeToggleDarkIcon.classList.remove('hidden');
+            }
+        }
+
+        if (localStorage.getItem('color-theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+        updateIcon();
+
+        themeToggleBtn.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+            updateIcon();
+        });
+
+        // --- LOGIKA MEMORI HARIAN (LOCAL STORAGE) ---
+        function getTodayDate() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        let rideHistory = JSON.parse(localStorage.getItem('ride_history')) || {};
+        let today = getTodayDate();
+
+        if (!rideHistory[today]) {
+            rideHistory[today] = { maxSpeed: 0, distance: 0, fuel: 0 };
+        }
+
+        document.getElementById('max-speed').innerText = Math.round(rideHistory[today].maxSpeed);
+
+        function renderHistory() {
+            const listContainer = document.getElementById('history-list');
+            listContainer.innerHTML = '';
+            
+            const dates = Object.keys(rideHistory).sort((a, b) => new Date(b) - new Date(a));
+            
+            if(dates.length === 0) {
+                listContainer.innerHTML = '<p class="text-sm text-gray-500">Belum ada catatan perjalanan.</p>';
+                return;
+            }
+
+            dates.forEach(date => {
+                const data = rideHistory[date];
+                const avgRatio = data.fuel > 0 ? (data.distance / data.fuel).toFixed(1) : "0.0";
+                
+                const card = `
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="text-sm font-bold text-blue-600 dark:text-blue-400 mb-2">${date}</div>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
+                            <div>Top Speed: <span class="font-semibold text-gray-900 dark:text-white">${Math.round(data.maxSpeed)} km/h</span></div>
+                            <div>Jarak: <span class="font-semibold text-gray-900 dark:text-white">${data.distance.toFixed(1)} km</span></div>
+                            <div>Bensin: <span class="font-semibold text-gray-900 dark:text-white">${data.fuel.toFixed(2)} L</span></div>
+                            <div>Rata-rata: <span class="font-semibold text-gray-900 dark:text-white">${avgRatio} km/L</span></div>
+                        </div>
+                    </div>
+                `;
+                listContainer.innerHTML += card;
+            });
+        }
+
+        document.getElementById('history-btn').addEventListener('click', () => {
+            renderHistory();
+            document.getElementById('history-modal').classList.remove('hidden');
+        });
+        
+        document.getElementById('close-history').addEventListener('click', () => {
+            document.getElementById('history-modal').classList.add('hidden');
+        });
+
+        // --- LOGIKA SPEEDOMETER & GPS ---
+        let startTime = Date.now();
+        let totalDistance = 0; 
+        let totalFuelUsed = 0; 
+        let lastPosition = null;
+        let speedReadings = [];
+
+        setInterval(() => {
+            const diff = new Date(Date.now() - startTime);
+            const h = String(diff.getUTCHours()).padStart(2, '0');
+            const m = String(diff.getUTCMinutes()).padStart(2, '0');
+            const s = String(diff.getUTCSeconds()).padStart(2, '0');
+            document.getElementById('time').innerText = `${h}:${m}:${s}`;
+        }, 1000);
+
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition((position) => {
+                document.getElementById('gps-status').className = "text-green-500 font-bold tracking-widest text-lg";
+                
+                let speedKmh = (position.coords.speed || 0) * 3.6;
+                document.getElementById('speed').innerText = Math.round(speedKmh);
+
+                if (speedKmh > rideHistory[today].maxSpeed) {
+                    rideHistory[today].maxSpeed = speedKmh;
+                    document.getElementById('max-speed').innerText = Math.round(speedKmh);
+                    localStorage.setItem('ride_history', JSON.stringify(rideHistory));
+                }
+
+                if (lastPosition) {
+                    let stepDistance = getDistance(lastPosition.coords.latitude, lastPosition.coords.longitude, position.coords.latitude, position.coords.longitude);
+                    
+                    totalDistance += stepDistance;
+                    document.getElementById('distance').innerText = totalDistance.toFixed(2);
+
+                    let currentRatio = 38.0; 
+                    if (speedKmh < 20) {
+                        currentRatio = 25.0; 
+                    } else if (speedKmh >= 20 && speedKmh <= 60) {
+                        currentRatio = 42.0; 
+                    } else {
+                        currentRatio = 30.0; 
+                    }
+                    
+                    document.getElementById('fuel-ratio').innerText = currentRatio.toFixed(1);
+
+                    if (stepDistance > 0) {
+                        let stepFuel = stepDistance / currentRatio;
+                        totalFuelUsed += stepFuel;
+                        document.getElementById('fuel-used').innerText = totalFuelUsed.toFixed(3);
+
+                        rideHistory[today].distance += stepDistance;
+                        rideHistory[today].fuel += stepFuel;
+                        localStorage.setItem('ride_history', JSON.stringify(rideHistory));
+                    }
+                }
+                lastPosition = position;
+
+                if (speedKmh > 0) { 
+                    speedReadings.push(speedKmh);
+                    const avg = speedReadings.reduce((a, b) => a + b, 0) / speedReadings.length;
+                    document.getElementById('avg-speed').innerText = Math.round(avg);
+                }
+            }, (error) => {
+                document.getElementById('gps-status').className = "text-red-500 font-bold tracking-widest text-lg";
+                console.warn("GPS Error:", error.message);
+            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
+        } else {
+            alert("Perangkat ini tidak mendukung GPS.");
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW setup failed'));
+            });
+        }
+    </script>
+</body>
+</html>
