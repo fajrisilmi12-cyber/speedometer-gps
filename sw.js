@@ -25,8 +25,12 @@ self.addEventListener('fetch', (e) => {
     fetch(e.request)
       .then((response) => {
         // Jika ada internet, ambil file terbaru dari server dan simpan ke cache
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          e.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone))
+          );
+        }
         return response;
       })
       .catch(() => {
